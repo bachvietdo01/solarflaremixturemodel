@@ -33,7 +33,6 @@ parameters {
   real alpha;           
   vector[D] theta;
   real<lower=0> sigma;
-  real<lower=0> tau2;
 
   simplex[K] pi_uo;             
   vector[D] mu_uo[K]; 
@@ -70,7 +69,7 @@ model {
   //prior of theta is a finite mixture model
   for (k in 1:K){
     // increment log probability of the gaussian
-    theta_dist[k] = log(pi_uo[k]) + multi_normal_lpdf(theta| mu_uo[k], tau2 * I);
+    theta_dist[k] = log(pi_uo[k]) + multi_normal_lpdf(theta| mu_uo[k], I);
   }
   
   target += log_sum_exp(theta_dist);
