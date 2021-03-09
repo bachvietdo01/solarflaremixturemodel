@@ -103,7 +103,7 @@ for i in range(K):
     fig = plt.figure()
     ax = plt.axes()
     ax.plot(range(burin_iter, chain1['pi'].shape[0]), chain1['pi'][burin_iter:, i].tolist())
-    ax.plot(range(burin_iter, chain1['pi'].shape[0]), chain2['pi'][burin_iter:, i].tolist())
+    ax.plot(range(burin_iter, chain2['pi'].shape[0]), chain2['pi'][burin_iter:, i].tolist())
     plt.show()
 
 # mu trace plot

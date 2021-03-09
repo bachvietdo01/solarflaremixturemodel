@@ -87,6 +87,15 @@ def run_mm1_gibbs(niters, X, y, K, X_test = None, y_test = None, mm = None, ):
             'z': z_ts, 'sigma2':sigma2_ts, 'mm1': mm1, 'rmse': rmse_ts}
     
 
+# Estimator
+    
+beta_hat = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
+y_pred = X_test.dot(beta_hat)
+rmse = np.sqrt(np.sum(np.square(y_pred - y_test)) / y_test.shape[0])
+print("Linear Regerssion RMSE is {}".format(rmse))
+
+
+# Gibbs Sampler
 K = 2
 
 chain1 = run_mm1_gibbs(1000, X, y, K, X_test, y_test)

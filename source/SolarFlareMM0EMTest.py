@@ -35,6 +35,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from SolarFlareMM0Sim import SolarFlareMM0Sim
 from SolarFlareMM0EM import SolarFlareMM0EM
+from sklearn.cluster import KMeans
 
 # simulate data
 N = 1000
@@ -47,15 +48,16 @@ mu = np.zeros((K, D))
 Sigma = np.zeros((K, D, D))
 
 
-pi = np.array([0.1, 0.9])
-beta[0,] = [-1, 0]
+pi = np.array([0.5, 0.5])
+beta[0,] = [-1 ,0]
 beta[1,] = [1, 0]
 sigma2[0] = 1
 sigma2[1] = 1
-mu[0,] = [-5, 0]
-mu[1,] = [5, 0]
+mu[0,] = [0, 0]
+mu[1,] = [0, 0]
 Sigma[0,] = np.identity(D)
 Sigma[1,] = np.identity(D)
+
 
 
 mm0_sim = SolarFlareMM0Sim(N, D, K, sigma2 = sigma2, pi = pi, beta = beta,
@@ -76,6 +78,17 @@ plt.scatter(X[:,0], y)
 plt.xlabel("X[,0]")
 plt.xlabel("y")
 
+# create design matrix
+# X_design = np.ones( (X.shape[0], X.shape[1] + 1))
+# X_design[:,1:] = X
+
+# X_test_design = np.ones( (X_test.shape[0], X_test.shape[1] + 1))
+# X_test_design[:,1:] = X_test
+
+# X = X_design
+# X_test = X_test_design
+
+
 
 debug_r = np.zeros((N, D))
 
@@ -88,7 +101,7 @@ for n in range(N):
 
 def run_mm0_em(niters, X, y, K, X_test = None, y_test = None, mm = None,
                debug_r = None, debug_beta = None, debug_sigma2 = None, debug_pi = None,
-               debug_mu = None, debug_Sigma = None, pi0 = None):
+               debug_mu = None, debug_Sigma = None, pi0 = None, mu0 = None):
     D = X.shape[1]
         
     # tracking model parameters
@@ -107,7 +120,8 @@ def run_mm0_em(niters, X, y, K, X_test = None, y_test = None, mm = None,
     if mm is None:
         mm0 = SolarFlareMM0EM(X, y, K, debug_sigma2 = debug_sigma2,
                               debug_pi = debug_pi, debug_r = debug_r, debug_beta = debug_beta,
-                              debug_mu = debug_mu, debug_Sigma = debug_Sigma, pi0 = pi0)
+                              debug_mu = debug_mu, debug_Sigma = debug_Sigma, 
+                              pi0 = pi0, mu0 = mu0)
     else:
         mm0 = mm
 
@@ -148,10 +162,22 @@ rmse = np.sqrt(np.sum(np.square(y_pred - y_test)) / y_test.shape[0])
 print("Linear Regerssion RMSE is {}".format(rmse))
 
 
-K = 2
+K = 5
+
+# create a random initalization point
+mu0 = np.zeros((K, X.shape[1]))
+
+mu0_min = np.amin(X, axis = 0)
+mu0_max = np.amax(X, axis = 0)
+
+for k in range(K):
+    mu0[k,] = mu0_min + np.random.uniform() * (mu0_max - mu0_min)
+
 
 pi0 = dist.dirichlet.rvs(np.full(K, 1))[0]
-em_run = run_mm0_em(50, X, y, K, X_test, y_test, pi0 = pi0)
+em_run = run_mm0_em(100, X, y, K, X_test, y_test, pi0 = pi0,
+                    mu0 = mu0)
+
 
 
 # plot out log like hood trace
@@ -319,6 +345,29 @@ em_run = run_mm0_em(50, X, y, K, X_test, y_test, pi0 = pi0)
 em_run['aic'][-1]
 em_run['bic'][-1]
 em_run['log_ll'][-1]
+
+
+# visualize beta cofficients
+beta_hat = em_run['beta'][-1]
+
+
+feat_nums = range(len(beta_hat[0]))
+plt.bar(feat_nums, beta_hat[0], align='center', alpha=0.5)
+plt.xticks(feat_nums, feat_nums)
+plt.bar(feat_nums, beta_hat[1], align='center', alpha=0.5)
+plt.xticks(feat_nums, feat_nums)
+plt.bar(feat_nums, beta_hat[2], align='center', alpha=0.5)
+plt.xticks(feat_nums, feat_nums)
+plt.bar(feat_nums, beta_hat[3], align='center', alpha=0.5)
+plt.xticks(feat_nums, feat_nums)
+plt.bar(feat_nums, beta_hat[4], align='center', alpha=0.5)
+plt.xticks(feat_nums, feat_nums)
+
+# pi_hat
+pi_hat = em_run['pi'][-1]
+cl_nums = range(len(pi_hat))
+plt.bar(cl_nums, pi_hat, align='center', alpha=0.5)
+plt.xticks(cl_nums, cl_nums)
 
 
 

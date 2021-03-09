@@ -1,69 +1,22 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb 16 09:45:48 2021
+Created on Tue Feb 16 12:27:45 2021
 
 @author: vietdo
 """
 
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Feb 15 21:42:40 2021
-
-@author: vietdo
-"""
-
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Feb  8 18:45:34 2021
-
-@author: vietdo
-"""
-
-import pickle, scipy.stats as dist
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from SolarFlareMM2Sim import SolarFlareMM2Sim
+import scipy.stats as dist
 from SolarFlareMM2EM import SolarFlareMM2EM
 
-# simulate data
-N = 1000
-D = 2
-K = 4
+X_train = pd.read_csv('fulldata/X_train.csv', header = None).to_numpy()
+X_test = pd.read_csv('fulldata/X_test.csv', header=None).to_numpy()
 
-beta = np.zeros((K, D))
-sigma2 = np.zeros(K)
-
-
-pi = np.array([0.2, 0.2, 0.1, .5])
-beta[0,] = [-5, 0]
-beta[1,] = [5, 0]
-beta[2,] = [-10, 0]
-beta[3,] = [10, 0]
-sigma2[0] = 4
-sigma2[1] = 1
-sigma2[2] = 2
-sigma2[3] = 3
-
-mm2_sim = SolarFlareMM2Sim(N, D, K, sigma2 = sigma2, pi = pi, beta = beta)
-mm2_sim.generate()
-
-# initalize Solar Flare MM1
-X = mm2_sim.X[:800,]
-y = mm2_sim.y[:800,]
-X_test = mm2_sim.X[800:,]
-y_test = mm2_sim.y[800:,]
-
-debug_r = np.zeros((N, D))
-
-for n in range(N):
-    if mm1_sim.z[n] == 1:
-        debug_r[n, 1] = 1
-    else:
-        debug_r[n, 0] = 1
-
+y_train = pd.read_csv('fulldata/y_train.csv').to_numpy()[:,0]
+y_test = pd.read_csv('fulldata/y_test.csv').to_numpy()[:,0]
 
 def run_mm2_em(niters, X, y, K, X_test = None, y_test = None, mm = None,
                debug_r = None, debug_beta = None, debug_sigma2 = None, debug_pi = None,
@@ -117,21 +70,14 @@ def run_mm2_em(niters, X, y, K, X_test = None, y_test = None, mm = None,
     
 
 # Linear Regerssion MLE
-beta_hat = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
+beta_hat = np.linalg.inv(X_train.T.dot(X_train)).dot(X_train.T).dot(y_train)
 y_pred = X_test.dot(beta_hat)
 rmse = np.sqrt(np.sum(np.square(y_pred - y_test)) / y_test.shape[0])
 print("Linear Regerssion RMSE is {}".format(rmse))
 
 
-K = 4
+K = 5
 
 pi0 = dist.dirichlet.rvs(np.full(K, 1))[0]
 
-em_run = run_mm2_em(15, X, y, K, X_test, y_test, pi_0 = pi0)
-
-    
-
-
-
-
-    
+em_run = run_mm2_em(100, X_train, y_train, K, X_test, y_test, pi_0 = pi0)
