@@ -73,11 +73,12 @@ def process_final_flare_data(time_lag = 12.0, flare_list_path = 'flare_list', sh
         # pick only the row with min(min_tim_diff) and min_tim_diff < 60 minutes
         flares_data = flares_tmp.loc[flares_tmp['min_tim_diff'] == flares_tmp['abs_tim_diff']]
         harp_to_ar[p[:-4]] = set(flares_data['NOAA_ar_num'].tolist())
+        
         flares_data = flares_data.loc[(flares_data['min_tim_diff'] <= time_tol_in_mins * 60)]
         
         flares_data.to_csv(out_path + '/' + p, index = False)
     
     return harp_to_ar
 
-harp_to_ar = process_final_flare_data()
+harp_to_ar = process_final_flare_data(time_lag = 1.0, out_path='flare_data_1h')
         

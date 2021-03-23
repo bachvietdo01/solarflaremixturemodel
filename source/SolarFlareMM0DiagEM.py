@@ -11,7 +11,7 @@ Created on Wed Feb 10 21:28:45 2021
 """
 Created on Mon Feb  8 15:43:55 2021
 
-@author: vietdo
+@author: vietd
 """
 import sys
 import numpy as np
@@ -39,8 +39,8 @@ class SolarFlareMM0DiagEM:
         self.pi = np.zeros(K)
         self.mu = np.zeros((K, D))
         self.Sigma_diag = np.zeros((K, D))
-        self.beta = np.full((K, D), 1)
-        self.sigma2 = np.full(K, 1)
+        self.beta = np.full((K, D), 1.0)
+        self.sigma2 = np.full(K, 1.0)
         
         # initalize parameters
         if pi0 is not None:
@@ -180,7 +180,14 @@ class SolarFlareMM0DiagEM:
         self.mu = mu_hat
         self.sigma2 = sigma2_hat
         self.beta = beta_hat
-        self.Sigma_diag = Sigma_diag_hat
+        
+        # ignore very small sigma value
+        for k in range(K):
+            for p in range(D):
+                if Sigma_diag_hat[k, p] < 1e-4:
+                    self.Sigma_diag[k,p] = 1e-4
+                else:
+                     self.Sigma_diag[k,p] = Sigma_diag_hat[k,p]
             
     def EM_iter(self):
         self.E_step()
@@ -211,13 +218,36 @@ class SolarFlareMM0DiagEM:
         
         return np.sqrt(rmse/ Nt)
     
+    def predict_y(self, X):
+        N = X.shape[0]
+        self.z_test = np.zeros(N)
+        y = np.zeros(N)
+        
+        for i in range(N):
+             xi = X[i,]
+             yi_p = 0
+             ri = np.zeros(self.K)
+             
+             for k in range(self.K):
+                 ri[k] = np.log(self.pi[k]) + dist.multivariate_normal.logpdf(xi, 
+                             mean=self.mu[k,], cov= np.diag(self.Sigma_diag[k, ]))
+                 
+             ri = np.exp(ri - np.max(ri))
+             ri = ri / np.sum(ri)
+             zi = np.argmax(ri)
+             self.z_test[i] = zi
+             
+             y[i] = xi.dot(self.beta[zi,])
+        
+        return y
+    
     def compute_selection_cretia(self):
         N, K = self.N, self.K
         
         zx = np.zeros((N, K))
         
         for k in range(K):
-            for n in range(N):                
+            for n in range(N):     
                 zx[n, k] = np.log(self.pi[k]) + dist.multivariate_normal.logpdf(self.X[n,],
                                                  mean=self.mu[k,], cov = np.diag(self.Sigma_diag[k,]))
         

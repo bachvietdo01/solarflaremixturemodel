@@ -147,7 +147,7 @@ def run_mm0_diag_em(niters, X, y, K, X_test = None, y_test = None, mm = None,
     
     return {'pi': pi_ts, 'beta': beta_ts, 'sigma2':sigma2_ts, 'mm0': mm0, 'mu': mu_ts,
             'Sigma': Sigmad_ts, "log_ll": logll_ts, "aic": aic_ts, "bic": bic_ts,
-            'ecll': ecll_ts}
+            'ecll': ecll_ts, 'rmse': rmse_ts}
     
 
 # Linear Regerssion MLE
