@@ -8,50 +8,37 @@ The physics of solar flares on the surface of the Sun is highly complex and not 
 
 _Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/bachvietdo01/solarflaremixturemodel.git
    ```
-3. Install NPM packages
+2. Install scikit learn packages
    ```sh
-   npm install
+   pip install sk-learn
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+3. Install numpy and pandas package
    ```
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+   pip install numpy
+   pip install pandas
+   ```
 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+In the source directory, there are a few important soruce files.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+* **SolarFlareMM2REM.py** is the source codes mixture model MM-2R where the heterogeneity pattern is shared among Active Regions. 
+* **SolarFlareMM2AdEM.py** is the source codes mixture model MM-2H where the heterogeneity pattern is extended to locations within Active Regions.
+* **trainutilities.py** contains many useful helper functions.
+* **run_solar_flare_mm2RH_parallelv3_xxh.py** to run both models MM-2R and MM-2H and produce performance metrics.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+To run the projects and reproduce metric for xx hours simply execute the following
 
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+```
+python run_solar_flare_mm2RH_parallelv3_xxh.py
+```
 
 
 
@@ -68,11 +55,10 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Bach Do - vietdo@umich.edu
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/bachvietdo01/solarflaremixturemodel](https://github.com/bachvietdo01/solarflaremixturemodel)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
