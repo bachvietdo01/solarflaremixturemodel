@@ -14,7 +14,7 @@ _Below is an example of how you can instruct your audience on installing and set
    ```
 2. Install scikit learn packages
    ```sh
-   pip install sk-learn
+   pip install -U scikit-learn
    ```
 3. Install numpy and pandas package
    ```
